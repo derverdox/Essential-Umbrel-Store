@@ -13,7 +13,12 @@ services:
       POSTGRES_USER: inventree
       POSTGRES_PASSWORD: change-me
     volumes:
-      - ${APP_DATA_DIR}/postgres:/var/lib/postgresql/data
+      - ${APP_DATA_DIR}/inventree-data:/home/inventree/data
+    command: >
+      sh -c "
+        invoke update &&
+        gunicorn InvenTree.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 90
+      "
     restart: unless-stopped
 
   cache:
