@@ -1,4 +1,3 @@
-version: "3.7"
 services:
   app_proxy:
     environment:
@@ -21,7 +20,9 @@ services:
 
   inventree-server:
     image: inventree/inventree:stable
-    depends_on: [inventree-db, inventree-cache]
+    depends_on:
+      - inventree-db
+      - inventree-cache
     environment:
       INVENTREE_DB_ENGINE: postgresql
       INVENTREE_DB_HOST: inventree-db
@@ -37,7 +38,8 @@ services:
   inventree-worker:
     image: inventree/inventree:stable
     command: invoke worker
-    depends_on: [inventree-server]
+    depends_on:
+      - inventree-server
     environment:
       INVENTREE_DB_ENGINE: postgresql
       INVENTREE_DB_HOST: inventree-db
