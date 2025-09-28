@@ -1,15 +1,14 @@
 manifestVersion: 1
-id: verdox-inventree
+id: verdox-inventree        # == Ordnername und beginnt mit Store-ID (z. B. "verdox")
 category: productivity
 name: "InvenTree"
-version: "0.13.0"
-tagline: "Open Source Inventory Management"
-description: "Track parts, stock and suppliers with InvenTree."
+version: "1.0.0"
+tagline: "Open-Source Inventarverwaltung"
+description: "Teile, Lager, Lieferanten verwalten – direkt auf deinem Umbrel."
 developer: "InvenTree Community"
 website: "https://inventree.org"
 repo: "https://github.com/inventree/InvenTree"
 support: "https://github.com/inventree/InvenTree/issues"
-port: 3015   # wird von Umbrel-Proxy genutzt
+port: 3015
 gallery:
   - 1.png
-  - 2.png
