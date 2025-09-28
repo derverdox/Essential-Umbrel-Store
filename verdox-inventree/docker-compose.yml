@@ -1,7 +1,10 @@
 services:
   app_proxy:
+    # optional (hilft beim ersten Boot etwas):
+    depends_on:
+      - inventree-server
     environment:
-      APP_HOST: inventree-server
+      APP_HOST: inventree-server   # <- exakt Service-Name
       APP_PORT: 8000
 
   inventree-db:
@@ -19,7 +22,7 @@ services:
     restart: unless-stopped
 
   inventree-server:
-    image: inventree/inventree:stable
+    image: inventree/inventree:stable   # fester Tag, keine Variablen
     depends_on:
       - inventree-db
       - inventree-cache
@@ -34,6 +37,12 @@ services:
     volumes:
       - ${APP_DATA_DIR}/inventree-data:/home/inventree/data
     restart: unless-stopped
+    # optional (hilft beim Debuggen):
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8000/api/"]  # braucht busybox/wget im Image; wenn nicht, weglassen
+      interval: 30s
+      timeout: 5s
+      retries: 10
 
   inventree-worker:
     image: inventree/inventree:stable
