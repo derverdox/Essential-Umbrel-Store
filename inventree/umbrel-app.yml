@@ -1,0 +1,19 @@
+manifestVersion: 1
+id: myco-inventory           # muss mit Store-Prefix beginnen
+category: productivity
+name: "Inventory"
+version: "1.0.0"
+tagline: "Track PC-Komponenten & Preise"
+description: "Kleines Inventar-Tool für PC-Teile."
+developer: "MyCo"
+website: "https://example.com"
+repo: "https://github.com/myco/inventory"
+support: "https://github.com/myco/inventory/issues"
+port: 3015                   # UI-Port hinter Umbrels Proxy
+gallery:
+  - 1.png
+path: ""                     # (optional) Pfad hinter dem Port
+defaultUsername: ""
+defaultPassword: ""
+# optional: Abhängigkeiten auf andere Umbrel-Apps
+dependencies: []
