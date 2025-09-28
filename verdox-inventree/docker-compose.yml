@@ -1,74 +1,67 @@
-services:
-  # Umbrels interner Reverse-Proxy für die App
-  app_proxy:
-    depends_on:
-      - web
-    environment:
-      APP_HOST: web
-      APP_PORT: 8000
+version: "3.8"
 
-  # PostgreSQL Datenbank
+services:
   db:
     image: postgres:16
+    container_name: inventree_db
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: inventree
       POSTGRES_USER: inventree
-      POSTGRES_PASSWORD: change-me
+      POSTGRES_PASSWORD: inventree
+      POSTGRES_DB: inventree
     volumes:
-      - ${APP_DATA_DIR}/postgres:/var/lib/postgresql/data
-    restart: unless-stopped
+      - db_data:/var/lib/postgresql/data
 
-  # Redis Cache
   cache:
-    image: redis:7-alpine
+    image: redis:7
+    container_name: inventree_cache
     restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - cache_data:/data
 
-  # InvenTree Web (Gunicorn)
   web:
-    image: inventree/inventree:stable
+    image: inventree/inventree:latest
+    container_name: inventree_web
+    restart: unless-stopped
     depends_on:
       - db
       - cache
     environment:
-      INVENTREE_DB_ENGINE: postgresql
-      INVENTREE_DB_HOST: db
-      INVENTREE_DB_NAME: inventree
-      INVENTREE_DB_USER: inventree
-      INVENTREE_DB_PASSWORD: change-me
-      INVENTREE_CACHE_HOST: cache
-      INVENTREE_CACHE_PORT: "6379"
-      # Wichtig: Origin ohne Pfad!
-      INVENTREE_SITE_URL: "https://umbrel.local"
-      CSRF_TRUSTED_ORIGINS: "https://umbrel.local"
-      # Optional, falls du die eingebaute Plugin-Engine nutzen willst:
-      # INVENTREE_PLUGINS_ENABLED: "True"
+      - INVI_DB_ENGINE=django.db.backends.postgresql
+      - INVI_DB_NAME=inventree
+      - INVI_DB_USER=inventree
+      - INVI_DB_PASSWORD=inventree
+      - INVI_DB_HOST=db
+      - INVI_DB_PORT=5432
+      - INVI_CACHE_HOST=cache
+      - INVI_CACHE_PORT=6379
     volumes:
-      - ${APP_DATA_DIR}/inventree-data:/home/inventree/data
-    # Erster Start: Migration + Static Files; danach Gunicorn
-    command: >
-      sh -c "
-        python3 manage.py migrate &&
-        python3 manage.py collectstatic --noinput &&
-        gunicorn InvenTree.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 90
-      "
-    restart: unless-stopped
+      - inventree_data:/home/inventree/data
+    ports:
+      - "8000:8000"
 
-  # Background-Worker (Django Q)
   worker:
-    image: inventree/inventree:stable
-    command: invoke worker
-    depends_on:
-      - web
-    environment:
-      INVENTREE_DB_ENGINE: postgresql
-      INVENTREE_DB_HOST: db
-      INVENTREE_DB_NAME: inventree
-      INVENTREE_DB_USER: inventree
-      INVENTREE_DB_PASSWORD: change-me
-      INVENTREE_CACHE_HOST: cache
-      INVENTREE_CACHE_PORT: "6379"
-      INVENTREE_SITE_URL: "https://umbrel.local"
-      CSRF_TRUSTED_ORIGINS: "https://umbrel.local"
-    volumes:
-      - ${APP_DATA_DIR}/inventree-data:/home/inventree/data
+    image: inventree/inventree:latest
+    container_name: inventree_worker
     restart: unless-stopped
+    depends_on:
+      - db
+      - cache
+    command: invoke worker
+    environment:
+      - INVI_DB_ENGINE=django.db.backends.postgresql
+      - INVI_DB_NAME=inventree
+      - INVI_DB_USER=inventree
+      - INVI_DB_PASSWORD=inventree
+      - INVI_DB_HOST=db
+      - INVI_DB_PORT=5432
+      - INVI_CACHE_HOST=cache
+      - INVI_CACHE_PORT=6379
+    volumes:
+      - inventree_data:/home/inventree/data
+
+volumes:
+  db_data:
+  cache_data:
+  inventree_data:
