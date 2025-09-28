@@ -31,7 +31,7 @@ services:
       INVENTREE_DB_PASSWORD: change-me
       INVENTREE_CACHE_HOST: cache
       INVENTREE_CACHE_PORT: "6379"
-      # >>> Fix B unten (SITE_URL) kommt hierhin <<<
+      INVENTREE_SITE_URL: "https://umbrel.local/apps/verdox-inventree/"
     volumes:
       - ${APP_DATA_DIR}/inventree-data:/home/inventree/data
     restart: unless-stopped
@@ -48,7 +48,7 @@ services:
       INVENTREE_DB_PASSWORD: change-me
       INVENTREE_CACHE_HOST: cache
       INVENTREE_CACHE_PORT: "6379"
-      # >>> Fix B unten (SITE_URL) kommt hierhin <<<
+      INVENTREE_SITE_URL: "https://umbrel.local/apps/verdox-inventree/"
     volumes:
       - ${APP_DATA_DIR}/inventree-data:/home/inventree/data
     restart: unless-stopped
