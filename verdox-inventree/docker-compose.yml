@@ -1,67 +1,61 @@
-version: "3.8"
-
 services:
+  app_proxy:
+    depends_on:
+      - web
+    environment:
+      APP_HOST: web
+      APP_PORT: 8000
+
   db:
     image: postgres:16
-    container_name: inventree_db
-    restart: unless-stopped
     environment:
-      POSTGRES_USER: inventree
-      POSTGRES_PASSWORD: inventree
       POSTGRES_DB: inventree
+      POSTGRES_USER: inventree
+      POSTGRES_PASSWORD: change-me
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - ${APP_DATA_DIR}/postgres:/var/lib/postgresql/data
+    restart: unless-stopped
 
   cache:
-    image: redis:7
-    container_name: inventree_cache
+    image: redis:7-alpine
     restart: unless-stopped
-    command: redis-server --save 60 1 --loglevel warning
-    volumes:
-      - cache_data:/data
 
   web:
-    image: inventree/inventree:latest
-    container_name: inventree_web
-    restart: unless-stopped
+    image: inventree/inventree:stable
     depends_on:
       - db
       - cache
     environment:
-      - INVI_DB_ENGINE=django.db.backends.postgresql
-      - INVI_DB_NAME=inventree
-      - INVI_DB_USER=inventree
-      - INVI_DB_PASSWORD=inventree
-      - INVI_DB_HOST=db
-      - INVI_DB_PORT=5432
-      - INVI_CACHE_HOST=cache
-      - INVI_CACHE_PORT=6379
+      INVENTREE_DB_ENGINE: postgresql
+      INVENTREE_DB_HOST: db
+      INVENTREE_DB_NAME: inventree
+      INVENTREE_DB_USER: inventree
+      INVENTREE_DB_PASSWORD: change-me
+      INVENTREE_DB_PORT: 5432
+      INVENTREE_CACHE_HOST: cache
+      INVENTREE_CACHE_PORT: 6379
+      INVENTREE_SITE_URL: "https://umbrel.local"
+      CSRF_TRUSTED_ORIGINS: "https://umbrel.local"
     volumes:
-      - inventree_data:/home/inventree/data
-    ports:
-      - "8000:8000"
+      - ${APP_DATA_DIR}/inventree-data:/home/inventree/data
+    restart: unless-stopped
 
   worker:
-    image: inventree/inventree:latest
-    container_name: inventree_worker
-    restart: unless-stopped
-    depends_on:
-      - db
-      - cache
+    image: inventree/inventree:stable
     command: invoke worker
+    depends_on:
+      - web
     environment:
-      - INVI_DB_ENGINE=django.db.backends.postgresql
-      - INVI_DB_NAME=inventree
-      - INVI_DB_USER=inventree
-      - INVI_DB_PASSWORD=inventree
-      - INVI_DB_HOST=db
-      - INVI_DB_PORT=5432
-      - INVI_CACHE_HOST=cache
-      - INVI_CACHE_PORT=6379
+      INVENTREE_DB_ENGINE: postgresql
+      INVENTREE_DB_HOST: db
+      INVENTREE_DB_NAME: inventree
+      INVENTREE_DB_USER: inventree
+      INVENTREE_DB_PASSWORD: change-me
+      INVENTREE_DB_PORT: 5432
+      INVENTREE_CACHE_HOST: cache
+      INVENTREE_CACHE_PORT: 6379
+      INVENTREE_SITE_URL: "https://umbrel.local"
+      CSRF_TRUSTED_ORIGINS: "https://umbrel.local"
     volumes:
-      - inventree_data:/home/inventree/data
-
-volumes:
-  db_data:
-  cache_data:
-  inventree_data:
+      - ${APP_DATA_DIR}/inventree-data:/home/inventree/data
+    restart: unless-stopped
