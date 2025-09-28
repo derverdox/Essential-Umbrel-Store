@@ -1,4 +1,5 @@
 services:
+  # Umbrels interner Reverse-Proxy für die App
   app_proxy:
     depends_on:
       - web
@@ -6,6 +7,7 @@ services:
       APP_HOST: web
       APP_PORT: 8000
 
+  # PostgreSQL Datenbank
   db:
     image: postgres:16
     environment:
@@ -16,13 +18,17 @@ services:
       - ${APP_DATA_DIR}/postgres:/var/lib/postgresql/data
     restart: unless-stopped
 
+  # Redis Cache
   cache:
     image: redis:7-alpine
     restart: unless-stopped
 
+  # InvenTree Web (Gunicorn)
   web:
     image: inventree/inventree:stable
-    depends_on: [db, cache]
+    depends_on:
+      - db
+      - cache
     environment:
       INVENTREE_DB_ENGINE: postgresql
       INVENTREE_DB_HOST: db
@@ -31,15 +37,28 @@ services:
       INVENTREE_DB_PASSWORD: change-me
       INVENTREE_CACHE_HOST: cache
       INVENTREE_CACHE_PORT: "6379"
-      INVENTREE_SITE_URL: "https://umbrel.local/apps/verdox-inventree/"
+      # Wichtig: Origin ohne Pfad!
+      INVENTREE_SITE_URL: "https://umbrel.local"
+      CSRF_TRUSTED_ORIGINS: "https://umbrel.local"
+      # Optional, falls du die eingebaute Plugin-Engine nutzen willst:
+      # INVENTREE_PLUGINS_ENABLED: "True"
     volumes:
       - ${APP_DATA_DIR}/inventree-data:/home/inventree/data
+    # Erster Start: Migration + Static Files; danach Gunicorn
+    command: >
+      sh -c "
+        python3 manage.py migrate &&
+        python3 manage.py collectstatic --noinput &&
+        gunicorn InvenTree.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 90
+      "
     restart: unless-stopped
 
+  # Background-Worker (Django Q)
   worker:
     image: inventree/inventree:stable
     command: invoke worker
-    depends_on: [web]
+    depends_on:
+      - web
     environment:
       INVENTREE_DB_ENGINE: postgresql
       INVENTREE_DB_HOST: db
@@ -48,7 +67,8 @@ services:
       INVENTREE_DB_PASSWORD: change-me
       INVENTREE_CACHE_HOST: cache
       INVENTREE_CACHE_PORT: "6379"
-      INVENTREE_SITE_URL: "https://umbrel.local/apps/verdox-inventree/"
+      INVENTREE_SITE_URL: "https://umbrel.local"
+      CSRF_TRUSTED_ORIGINS: "https://umbrel.local"
     volumes:
       - ${APP_DATA_DIR}/inventree-data:/home/inventree/data
     restart: unless-stopped
