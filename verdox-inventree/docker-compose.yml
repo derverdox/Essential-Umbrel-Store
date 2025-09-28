@@ -1,5 +1,7 @@
+version: "3.8"
+
 services:
-  # Umbrel-Proxy, der die App ins Umbrel-Dashboard einbindet
+  # Umbrel-Proxy, der die App im Dashboard einbindet
   app_proxy:
     depends_on:
       - web
@@ -23,7 +25,7 @@ services:
     image: redis:7-alpine
     restart: unless-stopped
 
-  # InvenTree Webserver (Gunicorn)
+  # InvenTree Webserver (Gunicorn über invoke server)
   web:
     image: inventree/inventree:stable
     restart: unless-stopped
@@ -43,11 +45,7 @@ services:
       CSRF_TRUSTED_ORIGINS: "https://umbrel.local"
     volumes:
       - ${APP_DATA_DIR}/inventree-data:/home/inventree/data
-    command: >
-      sh -c "
-        invoke update &&
-        gunicorn InvenTree.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 90
-      "
+    command: invoke server
 
   # Hintergrund-Worker für Tasks
   worker:
