@@ -1,13 +1,12 @@
 services:
   app_proxy:
-    # optional (hilft beim ersten Boot etwas):
     depends_on:
-      - inventree-server
+      - web
     environment:
-      APP_HOST: inventree-server   # <- exakt Service-Name
+      APP_HOST: web
       APP_PORT: 8000
 
-  inventree-db:
+  db:
     image: postgres:16
     environment:
       POSTGRES_DB: inventree
@@ -17,46 +16,39 @@ services:
       - ${APP_DATA_DIR}/postgres:/var/lib/postgresql/data
     restart: unless-stopped
 
-  inventree-cache:
+  cache:
     image: redis:7-alpine
     restart: unless-stopped
 
-  inventree-server:
-    image: inventree/inventree:stable   # fester Tag, keine Variablen
-    depends_on:
-      - inventree-db
-      - inventree-cache
+  web:
+    image: inventree/inventree:stable
+    depends_on: [db, cache]
     environment:
       INVENTREE_DB_ENGINE: postgresql
-      INVENTREE_DB_HOST: inventree-db
+      INVENTREE_DB_HOST: db
       INVENTREE_DB_NAME: inventree
       INVENTREE_DB_USER: inventree
       INVENTREE_DB_PASSWORD: change-me
-      INVENTREE_CACHE_HOST: inventree-cache
+      INVENTREE_CACHE_HOST: cache
       INVENTREE_CACHE_PORT: "6379"
+      # >>> Fix B unten (SITE_URL) kommt hierhin <<<
     volumes:
       - ${APP_DATA_DIR}/inventree-data:/home/inventree/data
     restart: unless-stopped
-    # optional (hilft beim Debuggen):
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8000/api/"]  # braucht busybox/wget im Image; wenn nicht, weglassen
-      interval: 30s
-      timeout: 5s
-      retries: 10
 
-  inventree-worker:
+  worker:
     image: inventree/inventree:stable
     command: invoke worker
-    depends_on:
-      - inventree-server
+    depends_on: [web]
     environment:
       INVENTREE_DB_ENGINE: postgresql
-      INVENTREE_DB_HOST: inventree-db
+      INVENTREE_DB_HOST: db
       INVENTREE_DB_NAME: inventree
       INVENTREE_DB_USER: inventree
       INVENTREE_DB_PASSWORD: change-me
-      INVENTREE_CACHE_HOST: inventree-cache
+      INVENTREE_CACHE_HOST: cache
       INVENTREE_CACHE_PORT: "6379"
+      # >>> Fix B unten (SITE_URL) kommt hierhin <<<
     volumes:
       - ${APP_DATA_DIR}/inventree-data:/home/inventree/data
     restart: unless-stopped
