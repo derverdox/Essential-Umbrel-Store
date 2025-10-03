@@ -1,7 +1,7 @@
 services:
   app_proxy:
     environment:
-      APP_HOST: app
+      APP_HOST: verdox-pc-inventory_app_1
       APP_PORT: 8080
       APP_PROTOCOL: http
     restart: on-failure
