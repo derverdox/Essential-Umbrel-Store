@@ -1,0 +1,32 @@
+# docker-compose.yml
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: pcparts
+      POSTGRES_USER: pcparts
+      POSTGRES_PASSWORD: pcparts
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  app:
+    image: verdox/hardware-inventar-system:1.0.0
+    depends_on:
+      - db
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/pcparts
+      SPRING_DATASOURCE_USERNAME: pcparts
+      SPRING_DATASOURCE_PASSWORD: pcparts
+      # Optional, wenn du server.port überschreiben willst:
+      # PORT: 8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+
+volumes:
+  db-data:
