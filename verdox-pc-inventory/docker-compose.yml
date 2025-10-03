@@ -17,7 +17,7 @@ services:
       - ${APP_DATA_DIR}/postgres:/var/lib/postgresql/data
 
   app:
-    image: verdox/hardware-inventar-system:1.0.0
+    image: verdox/hardware-inventar-system:latest
     depends_on:
       - db
     restart: on-failure
