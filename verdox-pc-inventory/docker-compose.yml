@@ -1,32 +1,35 @@
-# docker-compose.yml
+# docker-compose.yml (für Umbrel App)
 services:
+  # Pflicht-Sidecar in Umbrel: leitet über Umbrels Reverse Proxy ein
+  app_proxy:
+    environment:
+      # Host = <serviceName>_<containerName>_1 ODER einfach der Service-Name
+      APP_HOST: app
+      APP_PORT: 8080
+    restart: on-failure
+
   db:
     image: postgres:16-alpine
+    restart: on-failure
     environment:
       POSTGRES_DB: pcparts
       POSTGRES_USER: pcparts
       POSTGRES_PASSWORD: pcparts
     volumes:
-      - db-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+      - ${APP_DATA_DIR}/postgres:/var/lib/postgresql/data
 
   app:
     image: verdox/hardware-inventar-system:1.0.0
     depends_on:
       - db
+    restart: on-failure
     environment:
+      # App muss INTERN auf 0.0.0.0:8080 lauschen
+      PORT: 8080
       SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/pcparts
       SPRING_DATASOURCE_USERNAME: pcparts
       SPRING_DATASOURCE_PASSWORD: pcparts
-      # Optional, wenn du server.port überschreiben willst:
-      # PORT: 8080
-    ports:
-      - "8080:8080"
     volumes:
-      - ./data:/app/data
-      - ./logs:/app/logs
-
-volumes:
-  db-data:
+      - ${APP_DATA_DIR}/data:/app/data
+      - ${APP_DATA_DIR}/logs:/app/logs
