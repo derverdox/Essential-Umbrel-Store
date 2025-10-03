@@ -1,0 +1,15 @@
+manifestVersion: 1
+id: verdox-inventree
+category: productivity
+name: "InvenTree"
+version: "1.0.0"
+tagline: "PC-Inventar System"
+description: |
+  Helps managing your personal pc hardware inventory.
+developer: "Verdox"
+website: ""
+repo: "https://github.com/derverdox/pclagersoftware"
+support: "https://github.com/derverdox/pclagersoftware/issues"
+port: 3015
+gallery:
+  - 1.png
