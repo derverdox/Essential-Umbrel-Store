@@ -1,12 +1,12 @@
-# docker-compose.yml (für Umbrel App)
 services:
-  # Pflicht-Sidecar in Umbrel: leitet über Umbrels Reverse Proxy ein
   app_proxy:
     environment:
-      # Host = <serviceName>_<containerName>_1 ODER einfach der Service-Name
       APP_HOST: app
       APP_PORT: 8080
+      APP_PROTOCOL: http
     restart: on-failure
+    networks:
+      - appnet
 
   db:
     image: postgres:16-alpine
@@ -17,6 +17,8 @@ services:
       POSTGRES_PASSWORD: pcparts
     volumes:
       - ${APP_DATA_DIR}/postgres:/var/lib/postgresql/data
+    networks:
+      - appnet
 
   app:
     image: verdox/hardware-inventar-system:1.0.0
@@ -24,12 +26,23 @@ services:
       - db
     restart: on-failure
     environment:
-      # App muss INTERN auf 0.0.0.0:8080 lauschen
-      PORT: 8080
+      # -> Spring Boot liest SERVER_PORT als server.port
+      SERVER_PORT: 8080
       SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/pcparts
       SPRING_DATASOURCE_USERNAME: pcparts
       SPRING_DATASOURCE_PASSWORD: pcparts
+      # Optional, wenn hinter Proxy korrekte Host/Proto nötig sind:
+      # SERVER_FORWARD_HEADERS_STRATEGY: framework
     volumes:
       - ${APP_DATA_DIR}/data:/app/data
       - ${APP_DATA_DIR}/logs:/app/logs
+    expose:
+      - "8080"      # nur informativ; für’s overlay nicht zwingend
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    name: ${APP_ID}_network
+    external: true
