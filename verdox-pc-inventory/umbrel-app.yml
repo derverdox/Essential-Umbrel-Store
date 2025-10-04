@@ -2,7 +2,7 @@ manifestVersion: 1
 id: verdox-pc-inventory
 category: productivity
 name: "PC-Inventar System"
-version: "1.0.8"
+version: "1.1.0"
 tagline: "PC-Inventar System"
 description: |
   Helps managing your personal pc hardware inventory.
