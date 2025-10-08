@@ -8,8 +8,6 @@ services:
 
   app:
     image: verdox/hardware-inventar-system:latest
-    depends_on:
-      - db
     restart: on-failure
     user: "0:1000"
     environment:
