@@ -1,7 +1,7 @@
 manifestVersion: 1
 id: verdox-open_hardware_api
 category: productivity
-name: "PC-Inventar System"
+name: "Open Hardware API"
 version: "1.0.2"
 tagline: "Open Hardware API"
 description: |
