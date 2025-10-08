@@ -1,7 +1,7 @@
 services:
   app_proxy:
     environment:
-      APP_HOST: verdox-open-hardware-api
+      APP_HOST: verdox-open-hardware-api_app_1
       APP_PORT: 8080
       APP_PROTOCOL: http
     restart: on-failure
