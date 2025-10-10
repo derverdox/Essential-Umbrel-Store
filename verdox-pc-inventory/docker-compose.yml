@@ -52,6 +52,8 @@ services:
       SELENIUM_REMOTE_URL: http://selenium:4444/wd/hub
     volumes:
       - ${APP_DATA_DIR}/open_hardware_api:/data/open_hardware_api
+  ports:
+    - "5050:5050"
 
   selenium:
     image: selenium/standalone-all-browsers:latest
