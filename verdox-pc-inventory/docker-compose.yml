@@ -14,7 +14,7 @@ services:
       POSTGRES_USER: pcparts
       POSTGRES_PASSWORD: pcparts
     volumes:
-      - ${APP_DATA_DIR}/postgres:/var/lib/postgresql/data
+      - ${APP_DATA_DIR}/db-data:/var/lib/postgresql/data
 
   app:
     image: verdox/hardware-inventar-system:latest
@@ -34,7 +34,7 @@ services:
       # Optional hilfreich hinter Proxy:
       # SERVER_FORWARD_HEADERS_STRATEGY: framework
     volumes:
-      - ${APP_DATA_DIR}/data:/var/lib/pc-storage-system
+      - ${APP_DATA_DIR}:/var/lib/pc-storage-system
 
   open-hardware-api:
     image: verdox/open-hardware-api:latest
@@ -51,7 +51,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: pcparts
       SELENIUM_REMOTE_URL: http://selenium:4444/wd/hub
     volumes:
-      - ${APP_DATA_DIR}/open_hardware_api:/var/lib/open-hardware-api
+      - ${APP_DATA_DIR}/open-hardware-api:/var/lib/open-hardware-api
   ports:
     - "5050:5050"
 
