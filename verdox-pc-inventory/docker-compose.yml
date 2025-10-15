@@ -29,7 +29,7 @@ services:
       SPRING_DATASOURCE_USERNAME: pcparts
       SPRING_DATASOURCE_PASSWORD: pcparts
       SELENIUM_REMOTE_URL: http://selenium:4444/wd/hub
-      OPEN_HARDWARE_API_ENDPOINT: open-hardware-api:8085
+      OPEN_HARDWARE_API_ENDPOINT: http://open-hardware-api:8085
       # Optional hilfreich hinter Proxy:
       # SERVER_FORWARD_HEADERS_STRATEGY: framework
     volumes:
