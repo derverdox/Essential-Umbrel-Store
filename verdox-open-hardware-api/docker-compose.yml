@@ -2,7 +2,7 @@ services:
   app_proxy:
     environment:
       APP_HOST: verdox-open-hardware-api_app_1
-      APP_PORT: 8080
+      APP_PORT: 5050
       APP_PROTOCOL: http
     restart: on-failure
 
@@ -31,9 +31,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: pcparts
       SELENIUM_REMOTE_URL: http://selenium:4444/wd/hub
     volumes:
-      - ${APP_DATA_DIR}/open-hardware-api:/var/lib/open-hardware-api
-    ports:
-      - "5050:5050"   # WebDriver
+      - ${APP_DATA_DIR}:/var/lib/open-hardware-api
 
   selenium:
     image: selenium/standalone-all-browsers:latest
