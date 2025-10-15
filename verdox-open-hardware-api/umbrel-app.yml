@@ -8,6 +8,6 @@ description: |
   An open hardware api node.
 developer: "Verdox"
 website: ""
-port: 5050
+port: 8085
 gallery:
   - 1.png
