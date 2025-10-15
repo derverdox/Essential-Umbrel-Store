@@ -15,10 +15,6 @@ services:
       POSTGRES_PASSWORD: pcparts
     volumes:
       - ${APP_DATA_DIR}/db-data:/var/lib/postgresql/data
-    networks:
-      shared-bridge:
-        aliases:
-          - open-hardware-api
 
   app:
     image: verdox/open-hardware-api:latest
@@ -36,6 +32,10 @@ services:
       SELENIUM_REMOTE_URL: http://selenium:4444/wd/hub
     volumes:
       - ${APP_DATA_DIR}:/var/lib/open-hardware-api
+    networks:
+      open-api-hw-network:
+        aliases:
+          - open-hardware-api
 
   selenium:
     image: selenium/standalone-all-browsers:latest
