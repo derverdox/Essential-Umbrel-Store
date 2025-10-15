@@ -32,10 +32,6 @@ services:
       SELENIUM_REMOTE_URL: http://selenium:4444/wd/hub
     volumes:
       - ${APP_DATA_DIR}:/var/lib/open-hardware-api
-    networks:
-      open-api-hw-network:
-        aliases:
-          - open-hardware-api
 
   selenium:
     image: selenium/standalone-all-browsers:latest
@@ -46,8 +42,3 @@ services:
       - ${APP_DATA_DIR}/chrome-profile:/home/seluser/profile
     environment:
       - SE_NODE_MAX_SESSIONS=16
-
-networks:
-  open-api-hw-network:
-    name: open-api-hw-network
-    driver: bridge
