@@ -15,3 +15,4 @@ gallery:
   - 1.png
 dependencies:
   - verdox-open-hardware-api
+path: ""
