@@ -42,3 +42,8 @@ services:
       - ${APP_DATA_DIR}/chrome-profile:/home/seluser/profile
     environment:
       - SE_NODE_MAX_SESSIONS=16
+
+networks:
+  open-api-hw-network:
+    name: open-api-hw-network
+    driver: bridge
