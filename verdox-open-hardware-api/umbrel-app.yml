@@ -11,3 +11,4 @@ website: ""
 port: 8085
 gallery:
   - 1.png
+path: ""
