@@ -20,7 +20,6 @@ services:
     image: verdox/hardware-inventar-system:latest
     depends_on:
       - db
-      - open-hardware-api
     restart: on-failure
     user: "0:1000"
     environment:
@@ -30,37 +29,8 @@ services:
       SPRING_DATASOURCE_USERNAME: pcparts
       SPRING_DATASOURCE_PASSWORD: pcparts
       SELENIUM_REMOTE_URL: http://selenium:4444/wd/hub
-      OPEN_HARDWARE_API_ENDPOINT: http://open-hardware-api:5050
+      OPEN_HARDWARE_API_ENDPOINT: http://umbrel.local:8085
       # Optional hilfreich hinter Proxy:
       # SERVER_FORWARD_HEADERS_STRATEGY: framework
     volumes:
       - ${APP_DATA_DIR}:/var/lib/pc-storage-system
-
-  open-hardware-api:
-    image: verdox/open-hardware-api:latest
-    depends_on:
-      - db
-      - selenium
-    restart: on-failure
-    user: "0:1000"
-    environment:
-      SERVER_PORT: 5050
-      SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/pcparts?currentSchema=openhwapi
-      SPRING_DATASOURCE_USERNAME: pcparts
-      SPRING_DATASOURCE_PASSWORD: pcparts
-      SELENIUM_REMOTE_URL: http://selenium:4444/wd/hub
-    volumes:
-      - ${APP_DATA_DIR}/open-hardware-api:/var/lib/open-hardware-api
-    ports:
-      - "5050:5050"   # WebDriver
-
-  selenium:
-    image: selenium/standalone-all-browsers:latest
-    shm_size: 2g
-    ports:
-      - "4444:4444"   # WebDriver
-    volumes:
-      - ${APP_DATA_DIR}/chrome-profile:/home/seluser/profile
-    environment:
-      - SE_NODE_MAX_SESSIONS=16
