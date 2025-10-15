@@ -15,6 +15,10 @@ services:
       POSTGRES_PASSWORD: pcparts
     volumes:
       - ${APP_DATA_DIR}/db-data:/var/lib/postgresql/data
+    networks:
+      shared-bridge:
+        aliases:
+          - open-hardware-api
 
   app:
     image: verdox/open-hardware-api:latest
