@@ -13,3 +13,5 @@ support: "https://github.com/derverdox/pclagersoftware/issues"
 port: 3015
 gallery:
   - 1.png
+depends:
+  - verdox-open-hardware-api
