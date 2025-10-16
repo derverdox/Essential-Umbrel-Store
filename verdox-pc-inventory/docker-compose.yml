@@ -6,7 +6,7 @@ services:
       APP_PROTOCOL: http
     restart: on-failure
 
-  db:
+  db-app:
     image: postgres:16-alpine
     restart: on-failure
     environment:
@@ -19,7 +19,7 @@ services:
   app:
     image: verdox/hardware-inventar-system:latest
     depends_on:
-      - db
+      - db-app
     restart: on-failure
     user: "0:1000"
     extra_hosts:
@@ -27,7 +27,7 @@ services:
     environment:
       SERVER_PORT: 8080         # Spring lauscht auf 0.0.0.0:8080
       SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/pcparts?currentSchema=pcparts
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-app:5432/pcparts?currentSchema=pcparts
       SPRING_DATASOURCE_USERNAME: pcparts
       SPRING_DATASOURCE_PASSWORD: pcparts
       SELENIUM_REMOTE_URL: http://selenium:4444/wd/hub
