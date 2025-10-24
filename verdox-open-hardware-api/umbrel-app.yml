@@ -2,7 +2,7 @@ manifestVersion: 1
 id: verdox-open-hardware-api
 category: productivity
 name: "Open Hardware API"
-version: "1.9"
+version: "1.9.1"
 tagline: "Open Hardware API"
 description: |
   An open hardware api node.
